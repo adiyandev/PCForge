@@ -48,18 +48,27 @@ function Games() {
 }
 
 function MyPC() {
- const [status,setStatus]=useState("idle"); const [specs,setSpecs]=useState(null);
- useEffect(()=>{const params=new URLSearchParams(window.location.search);const raw=params.get("scan");if(!raw)return;try{const data=JSON.parse(raw);const detected={cpu:data.cpu||"Not detected",gpu:data.gpu||"Not detected",ram:data.ram?data.ram+" GB":"Not detected",os:data.os||"Not detected",resolution:data.resolution||"Not detected",storage:data.storage_free_gb!=null?data.storage_free_gb+" GB free":"Not detected"};setSpecs(detected);setStatus("ready");localStorage.setItem("pcforge_scan",JSON.stringify(data));window.history.replaceState({},document.title,window.location.pathname)}catch{setStatus("idle")}},[]);
- const values=specs||{cpu:"Not detected",gpu:"Not detected",ram:"Not detected",os:"Not detected",resolution:"Not detected",storage:"Not detected"};
+ const [status,setStatus]=useState("idle"); const [specs,setSpecs]=useState(null); const [error,setError]=useState("");
+ const scan=async()=>{ if(!isDesktop||!window.pcforge?.scanSystem)return; setStatus("scanning"); setError(""); const result=await window.pcforge.scanSystem(); if(!result.ok){setStatus("error");setError(result.error||"Hardware scan failed.");return;} setSpecs(result.data); setStatus("ready"); localStorage.setItem("pcforge_scan",JSON.stringify(result.data)); };
+ const cpu=specs?.cpu, gpu=specs?.gpus?.[0], ram=specs?.memory, disk=specs?.storage?.[0], display=specs?.display?.modes?.find(m=>m.width&&m.height);
+ const values=[
+  ["CPU",cpu?.name||"Not detected",cpu?(String(cpu.cores||"?")+" cores · "+String(cpu.threads||"?")+" threads"):"Waiting for scan"],
+  ["GPU",gpu?.name||"Not detected",gpu?.driverVersion?("Driver "+gpu.driverVersion):"Waiting for scan"],
+  ["RAM",ram?.totalGB?(ram.totalGB+" GB"):"Not detected",ram?(String(ram.modules?.length||0)+" module"+((ram.modules?.length||0)===1?"":"s")):"Waiting for scan"],
+  ["Storage",disk?.totalGB?(disk.freeGB+" GB free"):"Not detected",disk?(disk.totalGB+" GB total · "+disk.drive):"Waiting for scan"],
+  ["Windows",specs?.os?.name||"Not detected",specs?.os?.build?("Build "+specs.os.build):"Waiting for scan"],
+  ["Display",display?((display.width||0)+" × "+(display.height||0)):"Not detected",display?.refreshRate?(display.refreshRate+" Hz"):"Waiting for scan"],
+  ["Motherboard",specs?.motherboard?.model||"Not detected",specs?.motherboard?.manufacturer||"Waiting for scan"],
+  ["Security",specs?.security?.tpm?.Present?"TPM present":"Not detected",specs?.security?.secureBoot===true?"Secure Boot on":specs?.security?.secureBoot===false?"Secure Boot off":"Secure Boot unavailable"]
+ ];
  return <main className="pc-page page-shell">
-  <section className="pc-hero"><div><span className="eyebrow">Your hardware</span><h1>Know your<br/><span>PC.</span></h1><p>PCForge will inspect gaming-relevant hardware locally and use it for compatibility checks.</p>{isDesktop?<button className="button button-primary" onClick={()=>setStatus("scanning")}>Scan my PC</button>:<a className="button button-primary" href="https://github.com/adiyandev/PCForge/releases/latest">Download PCForge Scanner</a>}</div>
-   <div className={"pc-status-card "+status}><span className={"status-dot "+(status==="ready"?"online":"")}/><span>{status==="ready"?"Scanner complete":status==="scanning"?"Scanning system":"Scanner ready"}</span><strong>{status==="ready"?"Hardware profile ready":status==="scanning"?"Preparing hardware scan":"Ready when you are"}</strong><small>{status==="ready"?"Detected locally by PCForge.":status==="scanning"?"Hardware detection will connect here in Phase 4.":"No hardware data has been collected yet."}</small></div>
+  <section className="pc-hero"><div><span className="eyebrow">Your hardware</span><h1>Know your<br/><span>PC.</span></h1><p>PCForge reads gaming-relevant hardware directly from Windows. Nothing is uploaded to a server.</p>{isDesktop?<button className="button button-primary" onClick={scan} disabled={status==="scanning"}>{status==="scanning"?"Scanning…":"Scan my PC"}</button>:<a className="button button-primary" href="https://github.com/adiyandev/PCForge/releases/latest">Download PCForge</a>}{error&&<p className="scan-error">{error}</p>}</div>
+   <div className={"pc-status-card "+status}><span className={"status-dot "+(status==="ready"?"online":"")}/><span>{status==="ready"?"Scanner complete":status==="scanning"?"Scanning system":status==="error"?"Scan failed":"Scanner ready"}</span><strong>{status==="ready"?"Hardware profile ready":status==="scanning"?"Checking Windows hardware":status==="error"?"Could not read the system":"Ready when you are"}</strong><small>{status==="ready"?"Detected locally by PCForge.":status==="scanning"?"Reading CPU, graphics, memory, storage and system information.":status==="error"?error:"No hardware data has been collected yet."}</small></div>
   </section>
-  <section className="hardware-section"><div className="section-heading"><span className="eyebrow">Hardware profile</span><h2>Your gaming<br/><span>specs.</span></h2></div><div className="hardware-grid">{Object.entries(values).map(([key,value])=><article className={"hardware-card "+(!specs?"pending":"")} key={key}><small>{key.replace("ram","RAM").replace("cpu","CPU").replace("gpu","GPU").replace("os","OS").replace("resolution","Resolution").replace("storage","Free storage")}</small><strong>{value}</strong><span>{specs?"Detected":"Waiting for scan"}</span></article>)}</div></section>
-  <section className="scan-privacy"><div><span className="eyebrow">Privacy</span><h2>Hardware only.<br/><span>Nothing personal.</span></h2></div><p>The desktop scanner is designed to read gaming-relevant system information only. It does not need documents, passwords, browser history, or personal files.</p></section>
+  <section className="hardware-section"><div className="section-heading"><span className="eyebrow">Hardware profile</span><h2>Your gaming<br/><span>specs.</span></h2></div><div className="hardware-grid">{values.map(([label,value,sub])=><article className={"hardware-card "+(!specs?"pending":"")} key={label}><small>{label}</small><strong>{value}</strong><span>{sub}</span></article>)}</div></section>
+  <section className="scan-privacy"><div><span className="eyebrow">Privacy</span><h2>Hardware only.<br/><span>Nothing personal.</span></h2></div><p>The desktop scanner reads hardware and Windows configuration through local system APIs. It does not need documents, passwords, browser history, cookies, or personal files.</p></section>
  </main>;
 }
-
 function GameDetails() {
  const {gameId}=useParams(); const game=games.find(item=>item.id===gameId); if(!game)return <PlaceholderPage title="Game not found." description="That game is not in the PCForge library yet."/>; const r=game.requirementsData;
  const rows=[["CPU",r.cpu,r.recommended.cpu],["GPU",r.gpu,r.recommended.gpu],["RAM",r.ram,r.recommended.ram],["Storage",r.storage,r.recommended.storage]];
