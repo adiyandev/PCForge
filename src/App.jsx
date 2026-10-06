@@ -28,7 +28,7 @@ function DesktopSidebar() {
    <span className="sidebar-label">WORKSPACE</span>
    <nav>{navItems.map(item=><NavLink key={item.to} to={item.to} end={item.to==="/"} className="sidebar-link"><span className="sidebar-icon">{item.label==="Overview"?"⌂":item.label==="Games"?"□":item.label==="My PC"?"▣":item.label==="Drivers"?"↻":"⚙"}</span><span>{item.label}</span></NavLink>)}</nav>
   </div>
-  <div className="sidebar-bottom"><div className="desktop-status"><span className="status-dot online"/><span><strong>PCForge Desktop</strong><small>Ready</small></span></div><span className="sidebar-version">v0.2.0</span></div>
+  <div className="sidebar-bottom"><div className="desktop-status"><span className="status-dot online"/><span><strong>PCForge Desktop</strong><small>Ready</small></span></div><span className="sidebar-version">v1.0.0</span></div>
  </aside>;
 }
 
