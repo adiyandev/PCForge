@@ -23,9 +23,17 @@ jobs:
         run: npm install
       - name: Build Windows installer
         run: npm run electron:build
+
+      - name: Read package version
+        id: package
+        shell: bash
+        run: |
+          echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', fromJSON(steps.package.outputs.version)) || github.ref_name }}
+          target_commitish: ${{ github.sha }}
           files: release/PCForge-Setup-*.exe
           generate_release_notes: true
           draft: false
