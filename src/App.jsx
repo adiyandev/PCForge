@@ -51,21 +51,45 @@ function MyPC(){
  const [status,setStatus]=useState("idle");
  const [specs,setSpecs]=useState(null);
  const demo={cpu:"Not detected",gpu:"Not detected",ram:"Not detected",os:"Windows 11 64-bit",resolution:"Not detected",storage:"Not detected"};
+
+ useEffect(()=>{
+  const params=new URLSearchParams(window.location.search);
+  const raw=params.get("scan");
+  if(!raw) return;
+  try{
+   const data=JSON.parse(raw);
+   const detected={
+    cpu:data.cpu||"Not detected",
+    gpu:data.gpu||"Not detected",
+    ram:data.ram?data.ram+" GB":"Not detected",
+    os:data.os||"Not detected",
+    resolution:data.resolution||"Not detected",
+    storage:data.storage_free_gb!=null?data.storage_free_gb+" GB free":"Not detected"
+   };
+   setSpecs(detected);
+   setStatus("ready");
+   localStorage.setItem("pcforge_scan",JSON.stringify(data));
+   window.history.replaceState({},document.title,window.location.pathname);
+  }catch{
+   setStatus("idle");
+  }
+ },[]);
+
  const scan=()=>{setStatus("scanning");setSpecs(null);setTimeout(()=>{setSpecs(demo);setStatus("ready")},1100)};
+
  return <main className="pc-page page-shell">
   <section className="pc-hero">
-   <div><span className="eyebrow">Your hardware</span><h1>Know your<br/><span>PC.</span></h1><p>PCForge will use the scanner to identify the hardware that matters for gaming. Nothing is uploaded permanently.</p><button className="button button-primary" onClick={scan} disabled={status==="scanning"}>{status==="scanning"?"Scanning…":"Start PC scan"}</button></div>
-   <div className={"pc-status-card "+status}><span className="status-dot"/><span>{status==="scanning"?"Scanner running":status==="ready"?"Scan complete":"Scanner ready"}</span><strong>{status==="scanning"?"Reading hardware…":status==="ready"?"Hardware profile ready":"Ready when you are"}</strong><small>{status==="ready"?"Demo profile — real .exe integration comes in Phase 2.":"This phase uses a local UI simulation; no scanner executable is connected yet."}</small></div>
+   <div><span className="eyebrow">Your hardware</span><h1>Know your<br/><span>PC.</span></h1><p>Run the Windows PCForge Scanner to identify the hardware that matters for gaming. The result is passed directly to this page.</p><button className="button button-primary" onClick={scan} disabled={status==="scanning"}>{status==="scanning"?"Scanning…":"Use demo scan"}</button></div>
+   <div className={"pc-status-card "+status}><span className="status-dot"/><span>{status==="scanning"?"Scanner running":status==="ready"?"Scan complete":"Scanner ready"}</span><strong>{status==="scanning"?"Reading hardware…":status==="ready"?"Hardware profile ready":"Run the PCForge Scanner"}</strong><small>{status==="ready"?"Detected by the Windows scanner.":"Download and run the Windows .exe to detect your real hardware."}</small></div>
   </section>
   <section className="hardware-section"><div className="section-heading"><span className="eyebrow">Hardware profile</span><h2>Your gaming<br/><span>specs.</span></h2></div>
    <div className="hardware-grid">
     {Object.entries(specs||demo).map(([key,value])=><article className={"hardware-card "+(!specs?"pending":"")} key={key}><small>{key.replace("ram","RAM").replace("cpu","CPU").replace("gpu","GPU").replace("os","OS").replace("resolution","Resolution").replace("storage","Free storage")}</small><strong>{value}</strong><span>{specs?"Detected":"Waiting for scan"}</span></article>)}
    </div>
   </section>
-  <section className="scan-privacy"><span className="eyebrow">Privacy first</span><h2>Hardware only.<br/><span>Nothing personal.</span></h2><p>The future PCForge scanner is designed to read gaming-relevant system information only. It will not inspect documents, passwords, browser history, or personal files.</p></section>
+  <section className="scan-privacy"><span className="eyebrow">Privacy first</span><h2>Hardware only.<br/><span>Nothing personal.</span></h2><p>The PCForge scanner reads gaming-relevant system information only. It does not inspect documents, passwords, browser history, or personal files.</p></section>
  </main>;
 }
-
 function GameDetails(){
  const { gameId } = useParams();
  const game=games.find(item=>item.id===gameId);
