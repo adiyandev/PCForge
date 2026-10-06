@@ -1,8 +1,33 @@
-import { NavLink, Route, Routes } from "react-router-dom";
+import { useMemo, useState } from "react";
+import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
+import { games } from "./data/games";
 
 const navItems=[{label:"Home",to:"/"},{label:"Games",to:"/games"},{label:"My PC",to:"/my-pc"},{label:"About",to:"/about"}];
 
-function PlaceholderPage({title,description}){return <main className="page-shell"><section className="placeholder"><span className="eyebrow">PCForge</span><h1>{title}</h1><p>{description}</p></section></main>;}
+function Games(){
+ const [query,setQuery]=useState("");
+ const navigate=useNavigate();
+ const filtered=useMemo(()=>games.filter(game=>`${game.title} ${game.genre} ${game.platform}`.toLowerCase().includes(query.trim().toLowerCase())),[query]);
+ return <main className="games-page page-shell">
+  <section className="games-hero">
+   <span className="eyebrow">Game library</span>
+   <h1>Find out what<br/><span>you can run.</span></h1>
+   <p>Search the PCForge game library and choose a title to check its requirements and compatibility.</p>
+   <label className="game-search">
+    <span aria-hidden="true">⌕</span>
+    <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search games, genres, or platforms..." aria-label="Search games"/>
+    {query && <button type="button" onClick={()=>setQuery("")} aria-label="Clear search">×</button>}
+   </label>
+  </section>
+  <section className="games-results">
+   <div className="results-heading"><div><span className="eyebrow">Library</span><h2>{filtered.length} {filtered.length===1?"game":"games"}</h2></div><span className="results-hint">Requirements will connect to the scanner later.</span></div>
+   {filtered.length ? <div className="games-grid">{filtered.map(game=><article className="game-card" key={game.id} onClick={()=>navigate(`/games/${game.id}`)} role="button" tabIndex="0" onKeyDown={e=>{if(e.key==="Enter"||e.key===" ") navigate(`/games/${game.id}`)}}>
+      <div className="game-art"><span>{game.title.slice(0,1)}</span><small>PCForge</small></div>
+      <div className="game-card-body"><div className="game-meta"><span>{game.genre}</span><span>{game.platform}</span></div><h3>{game.title}</h3><p>{game.requirements}</p><span className="game-link">View requirements <b>→</b></span></div>
+   </article>)}</div> : <div className="empty-games"><span>⌕</span><h3>No games found</h3><p>Try a different title, genre, or platform.</p><button className="button button-secondary" onClick={()=>setQuery("")}>Clear search</button></div>}
+  </section>
+ </main>;
+}
 
 function Home(){
  return <main>
@@ -52,7 +77,8 @@ function App(){
   </header>
   <Routes>
    <Route path="/" element={<Home/>}/>
-   <Route path="/games" element={<PlaceholderPage title="Find your next game." description="The game search experience is coming in Phase 1C."/>}/>
+   <Route path="/games" element={<Games/>}/>
+   <Route path="/games/:gameId" element={<PlaceholderPage title="Game requirements." description="Detailed requirements and compatibility scoring are coming next."/>}/>
    <Route path="/my-pc" element={<PlaceholderPage title="Your PC, at a glance." description="The detected hardware dashboard is coming in Phase 1E."/>}/>
    <Route path="/about" element={<PlaceholderPage title="Built to make PC requirements simple." description="PCForge turns hardware requirements into an answer you can understand."/>}/>
   </Routes>
