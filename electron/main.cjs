@@ -1,5 +1,6 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("path");
+const { scanSystem } = require("./system.cjs");
 
 let mainWindow;
 
@@ -19,16 +20,20 @@ function createWindow() {
     }
   });
 
-  if (process.env.ELECTRON_DEV_SERVER_URL) {
-    mainWindow.loadURL(process.env.ELECTRON_DEV_SERVER_URL);
-  } else {
-    mainWindow.loadFile(path.join(__dirname, "..", "dist", "index.html"));
-  }
+  if (process.env.ELECTRON_DEV_SERVER_URL) mainWindow.loadURL(process.env.ELECTRON_DEV_SERVER_URL);
+  else mainWindow.loadFile(path.join(__dirname, "..", "dist", "index.html"));
 }
+
+ipcMain.handle("pcforge:scan-system", async () => {
+  try {
+    return { ok: true, data: await scanSystem() };
+  } catch (error) {
+    return { ok: false, error: error.message || "Hardware scan failed." };
+  }
+});
 
 app.whenReady().then(() => {
   createWindow();
-
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
