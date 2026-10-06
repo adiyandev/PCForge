@@ -50,7 +50,6 @@ function Games(){
 function MyPC(){
  const [status,setStatus]=useState("idle");
  const [specs,setSpecs]=useState(null);
- const demo={cpu:"Not detected",gpu:"Not detected",ram:"Not detected",os:"Windows 11 64-bit",resolution:"Not detected",storage:"Not detected"};
 
  useEffect(()=>{
   const params=new URLSearchParams(window.location.search);
@@ -75,16 +74,14 @@ function MyPC(){
   }
  },[]);
 
- const scan=()=>{setStatus("scanning");setSpecs(null);setTimeout(()=>{setSpecs(demo);setStatus("ready")},1100)};
-
  return <main className="pc-page page-shell">
   <section className="pc-hero">
-   <div><span className="eyebrow">Your hardware</span><h1>Know your<br/><span>PC.</span></h1><p>Run the Windows PCForge Scanner to identify the hardware that matters for gaming. The result is passed directly to this page.</p><button className="button button-primary" onClick={scan} disabled={status==="scanning"}>{status==="scanning"?"Scanning…":"Use demo scan"}</button></div>
-   <div className={"pc-status-card "+status}><span className="status-dot"/><span>{status==="scanning"?"Scanner running":status==="ready"?"Scan complete":"Scanner ready"}</span><strong>{status==="scanning"?"Reading hardware…":status==="ready"?"Hardware profile ready":"Run the PCForge Scanner"}</strong><small>{status==="ready"?"Detected by the Windows scanner.":"Download and run the Windows .exe to detect your real hardware."}</small></div>
+   <div><span className="eyebrow">Your hardware</span><h1>Know your<br/><span>PC.</span></h1><p>Run the Windows PCForge Scanner to identify the hardware that matters for gaming. The result is passed directly to this page.</p><a className="button button-primary" href="https://github.com/adiyandev/PCForge/releases/latest">Download PCForge Scanner</a></div>
+   <div className={"pc-status-card "+status}><span className="status-dot"/><span>{status==="ready"?"Scanner connected":"Scanner ready"}</span><strong>{status==="ready"?"Hardware profile ready":"Run the PCForge Scanner"}</strong><small>{status==="ready"?"Detected by the Windows scanner.":"Download and run the Windows .exe to detect your real hardware."}</small></div>
   </section>
   <section className="hardware-section"><div className="section-heading"><span className="eyebrow">Hardware profile</span><h2>Your gaming<br/><span>specs.</span></h2></div>
    <div className="hardware-grid">
-    {Object.entries(specs||demo).map(([key,value])=><article className={"hardware-card "+(!specs?"pending":"")} key={key}><small>{key.replace("ram","RAM").replace("cpu","CPU").replace("gpu","GPU").replace("os","OS").replace("resolution","Resolution").replace("storage","Free storage")}</small><strong>{value}</strong><span>{specs?"Detected":"Waiting for scan"}</span></article>)}
+    {Object.entries(specs||{cpu:"Not detected",gpu:"Not detected",ram:"Not detected",os:"Not detected",resolution:"Not detected",storage:"Not detected"}).map(([key,value])=><article className={"hardware-card "+(!specs?"pending":"")} key={key}><small>{key.replace("ram","RAM").replace("cpu","CPU").replace("gpu","GPU").replace("os","OS").replace("resolution","Resolution").replace("storage","Free storage")}</small><strong>{value}</strong><span>{specs?"Detected":"Waiting for scan"}</span></article>)}
    </div>
   </section>
   <section className="scan-privacy"><span className="eyebrow">Privacy first</span><h2>Hardware only.<br/><span>Nothing personal.</span></h2><p>The PCForge scanner reads gaming-relevant system information only. It does not inspect documents, passwords, browser history, or personal files.</p></section>
@@ -93,14 +90,9 @@ function MyPC(){
 function GameDetails(){
  const { gameId } = useParams();
  const game=games.find(item=>item.id===gameId);
- if(!game) return <PlaceholderPage title="Game not found." description="That game is not in the PCForge library yet."/>;
+ if(!game) return <PlaceholderPage title="Game not found." description="That game is not in the PCForge library yet."/>
  const requirements=game.requirementsData;
- const rows=[
-  ["CPU",requirements.cpu,"Your PC","pending"],
-  ["GPU",requirements.gpu,"Your PC","pending"],
-  ["RAM",requirements.ram,"Your PC","pending"],
-  ["Storage",requirements.storage,"Your PC","pending"]
- ];
+ const rows=[["CPU",requirements.cpu,"Your PC","pending"],["GPU",requirements.gpu,"Your PC","pending"],["RAM",requirements.ram,"Your PC","pending"],["Storage",requirements.storage,"Your PC","pending"]];
  return <main className="details-page page-shell">
   <section className="details-hero">
    <div><span className="eyebrow">Compatibility check</span><h1>Can you run<br/><span>{game.title}?</span></h1><p>Compare your detected hardware with this game's requirements. Your final verdict will activate once PCForge has your scan.</p></div>
@@ -135,7 +127,6 @@ function Home(){
     <p>Run the PCForge Scanner when you're ready.</p>
    </div>
   </section>
-
   <section className="section page-shell">
    <div className="section-heading"><span className="eyebrow">How it works</span><h2>Three steps.<br/><span>One clear answer.</span></h2></div>
    <div className="steps-grid">
@@ -144,12 +135,10 @@ function Home(){
     <article className="step-card"><span>03</span><div><h3>Get your verdict</h3><p>See whether your PC passes, struggles, or falls short — without the guesswork.</p></div></article>
    </div>
   </section>
-
   <section className="privacy-section page-shell">
    <div><span className="eyebrow">Designed with privacy in mind</span><h2>Your PC specs are enough.<br/><span>Your files aren't.</span></h2></div>
    <p>PCForge is designed around hardware information only. The scanner should never need your documents, passwords, browser history, or personal files to answer whether a game can run.</p>
   </section>
-
   <section className="cta-section page-shell">
    <div><span className="eyebrow">PCForge</span><h2>Ready to find out<br/>what you can play?</h2><NavLink className="button button-primary" to="/my-pc">Open PCForge Scanner</NavLink></div>
   </section>
