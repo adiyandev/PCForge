@@ -1,10 +1,10 @@
 export const games = [
-  { id: "fortnite", title: "Fortnite", genre: "Battle Royale", platform: "Windows", requirements: "Competitive-friendly requirements" },
-  { id: "rocket-league", title: "Rocket League", genre: "Sports / Racing", platform: "Windows", requirements: "Lightweight gaming requirements" },
-  { id: "minecraft", title: "Minecraft", genre: "Sandbox", platform: "Windows", requirements: "Scales with settings and mods" },
-  { id: "gta-v", title: "Grand Theft Auto V", genre: "Action / Open World", platform: "Windows", requirements: "Mid-range gaming requirements" },
-  { id: "elden-ring", title: "Elden Ring", genre: "Action RPG", platform: "Windows", requirements: "Modern GPU recommended" },
-  { id: "cyberpunk-2077", title: "Cyberpunk 2077", genre: "RPG / Open World", platform: "Windows", requirements: "Demanding modern hardware" },
-  { id: "valorant", title: "VALORANT", genre: "Tactical Shooter", platform: "Windows", requirements: "Low-end friendly" },
-  { id: "apex-legends", title: "Apex Legends", genre: "Battle Royale", platform: "Windows", requirements: "Mid-range gaming requirements" }
+ {id:"fortnite",title:"Fortnite",genre:"Battle Royale",platform:"Windows",requirements:"Competitive-friendly requirements",requirementsData:{cpu:"Intel Core i3-3225",gpu:"Intel HD Graphics 4000",ram:"8 GB",storage:"26 GB",recommended:{cpu:"Intel Core i5-7300U",gpu:"GTX 960 / R9 280",ram:"16 GB",storage:"26 GB"}}},
+ {id:"rocket-league",title:"Rocket League",genre:"Sports / Racing",platform:"Windows",requirements:"Lightweight gaming requirements",requirementsData:{cpu:"Dual-core 2.5 GHz",gpu:"GeForce 760 / Radeon R7 270X",ram:"4 GB",storage:"20 GB",recommended:{cpu:"Quad-core 3.0 GHz",gpu:"GTX 1060 / RX 470",ram:"8 GB",storage:"20 GB"}}},
+ {id:"minecraft",title:"Minecraft",genre:"Sandbox",platform:"Windows",requirements:"Scales with settings and mods",requirementsData:{cpu:"Intel Core i3-3210",gpu:"Intel HD Graphics 4000",ram:"4 GB",storage:"2 GB",recommended:{cpu:"Intel Core i5-4690",gpu:"GTX 700 series",ram:"8 GB",storage:"4 GB"}}},
+ {id:"gta-v",title:"Grand Theft Auto V",genre:"Action / Open World",platform:"Windows",requirements:"Mid-range gaming requirements",requirementsData:{cpu:"Intel Core 2 Quad Q6600",gpu:"GT 640 / Radeon HD 4870",ram:"4 GB",storage:"125 GB",recommended:{cpu:"Intel Core i5-3470",gpu:"GTX 660 / HD 7870",ram:"8 GB",storage:"125 GB"}}},
+ {id:"elden-ring",title:"Elden Ring",genre:"Action RPG",platform:"Windows",requirements:"Modern GPU recommended",requirementsData:{cpu:"Intel Core i5-8400",gpu:"GTX 1060 3GB",ram:"12 GB",storage:"60 GB",recommended:{cpu:"Intel Core i7-8700K",gpu:"GTX 1070 8GB",ram:"16 GB",storage:"60 GB"}}},
+ {id:"cyberpunk-2077",title:"Cyberpunk 2077",genre:"RPG / Open World",platform:"Windows",requirements:"Demanding modern hardware",requirementsData:{cpu:"Core i7-6700 / Ryzen 5 1600",gpu:"GTX 1060 6GB / RX 580 8GB",ram:"12 GB",storage:"70 GB",recommended:{cpu:"Core i7-12700 / Ryzen 7 7800X3D",gpu:"RTX 2060 Super / RX 5700 XT",ram:"16 GB",storage:"70 GB"}}},
+ {id:"valorant",title:"VALORANT",genre:"Tactical Shooter",platform:"Windows",requirements:"Low-end friendly",requirementsData:{cpu:"Intel Core 2 Duo E8400",gpu:"Intel HD 4000",ram:"4 GB",storage:"23 GB",recommended:{cpu:"Intel i3-4150",gpu:"GT 730",ram:"4 GB",storage:"23 GB"}}},
+ {id:"apex-legends",title:"Apex Legends",genre:"Battle Royale",platform:"Windows",requirements:"Mid-range gaming requirements",requirementsData:{cpu:"Intel Core i3-6300",gpu:"GTX 640 / Radeon HD 7730",ram:"6 GB",storage:"75 GB",recommended:{cpu:"Intel Core i5-3570K",gpu:"GTX 970 / R9 290",ram:"8 GB",storage:"75 GB"}}}
 ];
