@@ -32,7 +32,7 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', fromJSON(steps.package.outputs.version)) || github.ref_name }}
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', steps.package.outputs.version) || github.ref_name }}
           target_commitish: ${{ github.sha }}
           files: release/PCForge-Setup-*.exe
           generate_release_notes: true
