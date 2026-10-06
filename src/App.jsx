@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
 import { games } from "./data/games";
 
+function PlaceholderPage({title,description}){return <main className="page-shell"><section className="placeholder"><span className="eyebrow">PCForge</span><h1>{title}</h1><p>{description}</p></section></main>;}
+
 const navItems=[{label:"Home",to:"/"},{label:"Games",to:"/games"},{label:"My PC",to:"/my-pc"},{label:"About",to:"/about"}];
 
 function Games(){
@@ -26,6 +28,32 @@ function Games(){
       <div className="game-card-body"><div className="game-meta"><span>{game.genre}</span><span>{game.platform}</span></div><h3>{game.title}</h3><p>{game.requirements}</p><span className="game-link">View requirements <b>→</b></span></div>
    </article>)}</div> : <div className="empty-games"><span>⌕</span><h3>No games found</h3><p>Try a different title, genre, or platform.</p><button className="button button-secondary" onClick={()=>setQuery("")}>Clear search</button></div>}
   </section>
+ </main>;
+}
+
+function GameDetails({gameId}){
+ const game=games.find(item=>item.id===gameId);
+ if(!game) return <PlaceholderPage title="Game not found." description="That game is not in the PCForge library yet."/>;
+ const requirements=game.requirementsData;
+ const rows=[
+  ["CPU",requirements.cpu,"Your PC","pending"],
+  ["GPU",requirements.gpu,"Your PC","pending"],
+  ["RAM",requirements.ram,"Your PC","pending"],
+  ["Storage",requirements.storage,"Your PC","pending"]
+ ];
+ return <main className="details-page page-shell">
+  <section className="details-hero">
+   <div><span className="eyebrow">Compatibility check</span><h1>Can you run<br/><span>{game.title}?</span></h1><p>Compare your detected hardware with this game's requirements. Your final verdict will activate once PCForge has your scan.</p></div>
+   <div className="verdict-card"><span className="verdict-icon">?</span><span className="eyebrow">Your verdict</span><strong>Waiting for PC scan</strong><p>Run the PCForge Scanner to compare your hardware.</p><NavLink className="button button-primary" to="/my-pc">View My PC</NavLink></div>
+  </section>
+  <section className="requirements-section">
+   <div className="requirements-heading"><div><span className="eyebrow">System requirements</span><h2>What {game.title} needs.</h2></div><span className="requirement-note">{game.genre} · {game.platform}</span></div>
+   <div className="requirement-table">
+    <div className="req-row req-head"><span>Component</span><span>Minimum</span><span>Recommended</span><span>Your PC</span></div>
+    {rows.map(([label,min,your,status])=><div className="req-row" key={label}><strong>{label}</strong><span>{min}</span><span>{requirements.recommended[label.toLowerCase()]||"Not specified"}</span><span className="req-pending">{status==="pending"?"Not scanned":your}</span></div>)}
+   </div>
+  </section>
+  <section className="verdict-explainer"><div><span className="eyebrow">How PCForge scores</span><h2>Simple verdicts.<br/><span>No technical guessing.</span></h2></div><div className="verdict-list"><div><b>●</b><span><strong>Playable</strong><small>Your hardware meets the target.</small></span></div><div><b>●</b><span><strong>Barely</strong><small>You can play, but expect compromises.</small></span></div><div><b>●</b><span><strong>Not recommended</strong><small>Your hardware falls below the target.</small></span></div></div></section>
  </main>;
 }
 
@@ -78,7 +106,7 @@ function App(){
   <Routes>
    <Route path="/" element={<Home/>}/>
    <Route path="/games" element={<Games/>}/>
-   <Route path="/games/:gameId" element={<PlaceholderPage title="Game requirements." description="Detailed requirements and compatibility scoring are coming next."/>}/>
+   <Route path="/games/:gameId" element={<GameDetails gameId={window.location.pathname.split("/").pop()}/>}/>
    <Route path="/my-pc" element={<PlaceholderPage title="Your PC, at a glance." description="The detected hardware dashboard is coming in Phase 1E."/>}/>
    <Route path="/about" element={<PlaceholderPage title="Built to make PC requirements simple." description="PCForge turns hardware requirements into an answer you can understand."/>}/>
   </Routes>
