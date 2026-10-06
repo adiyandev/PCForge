@@ -4,6 +4,22 @@ import { games } from "./data/games";
 
 function PlaceholderPage({title,description}){return <main className="page-shell"><section className="placeholder"><span className="eyebrow">PCForge</span><h1>{title}</h1><p>{description}</p></section></main>;}
 
+function About(){
+ return <main className="about-page page-shell">
+  <section className="about-hero">
+   <span className="eyebrow">About PCForge</span>
+   <h1>PC requirements<br/><span>without the headache.</span></h1>
+   <p>PCForge is built to turn confusing hardware requirements into a simple, useful answer: can your PC run the game you want to play?</p>
+   <NavLink className="button button-primary" to="/my-pc">Check my PC</NavLink>
+  </section>
+  <section className="about-grid">
+   <article><span>01</span><h2>Hardware first.</h2><p>PCForge focuses on the components that actually affect whether a game can run: CPU, GPU, RAM, storage and other relevant system details.</p></article>
+   <article><span>02</span><h2>No hardware database.</h2><p>Your machine does not need to become a permanent profile in a hardware database. The scanner is designed around temporary compatibility checks.</p></article>
+   <article><span>03</span><h2>Built for clarity.</h2><p>Instead of throwing a wall of specifications at you, PCForge turns the comparison into straightforward verdicts you can understand.</p></article>
+  </section>
+ </main>;
+}
+
 const navItems=[{label:"Home",to:"/"},{label:"Games",to:"/games"},{label:"My PC",to:"/my-pc"},{label:"About",to:"/about"}];
 
 function Games(){
@@ -38,7 +54,7 @@ function MyPC(){
  const scan=()=>{setStatus("scanning");setSpecs(null);setTimeout(()=>{setSpecs(demo);setStatus("ready")},1100)};
  return <main className="pc-page page-shell">
   <section className="pc-hero">
-   <div><span className="eyebrow">Your hardware</span><h1>Know your<br/><span>PC.</span></h1><p>PCForge will use the scanner to identify the hardware that matters for gaming. Nothing is uploaded permanently.</p><button className="button button-primary" onClick={scan}>{status==="scanning"?"Scanning…":"Start PC scan"}</button></div>
+   <div><span className="eyebrow">Your hardware</span><h1>Know your<br/><span>PC.</span></h1><p>PCForge will use the scanner to identify the hardware that matters for gaming. Nothing is uploaded permanently.</p><button className="button button-primary" onClick={scan} disabled={status==="scanning"}>{status==="scanning"?"Scanning…":"Start PC scan"}</button></div>
    <div className={"pc-status-card "+status}><span className="status-dot"/><span>{status==="scanning"?"Scanner running":status==="ready"?"Scan complete":"Scanner ready"}</span><strong>{status==="scanning"?"Reading hardware…":status==="ready"?"Hardware profile ready":"Ready when you are"}</strong><small>{status==="ready"?"Demo profile — real .exe integration comes in Phase 2.":"This phase uses a local UI simulation; no scanner executable is connected yet."}</small></div>
   </section>
   <section className="hardware-section"><div className="section-heading"><span className="eyebrow">Hardware profile</span><h2>Your gaming<br/><span>specs.</span></h2></div>
@@ -83,7 +99,7 @@ function Home(){
     <span className="eyebrow">PC compatibility, simplified</span>
     <h1>Can your PC<br/><span>run it?</span></h1>
     <p className="hero-text">Stop guessing from system requirements. PCForge scans the hardware that matters and turns it into a simple answer.</p>
-    <div className="hero-actions"><button className="button button-primary">Download Scanner</button><NavLink className="button button-secondary" to="/games">Check a Game</NavLink></div>
+    <div className="hero-actions"><NavLink className="button button-primary" to="/my-pc">Open Scanner</NavLink><NavLink className="button button-secondary" to="/games">Check a Game</NavLink></div>
     <div className="trust-row"><span>● No account required</span><span>● No personal files scanned</span><span>● Temporary hardware data</span></div>
    </div>
    <div className="hero-panel" aria-label="PCForge scanner preview">
@@ -110,7 +126,7 @@ function Home(){
   </section>
 
   <section className="cta-section page-shell">
-   <div><span className="eyebrow">PCForge</span><h2>Ready to find out<br/>what you can play?</h2><button className="button button-primary">Download PCForge Scanner</button></div>
+   <div><span className="eyebrow">PCForge</span><h2>Ready to find out<br/>what you can play?</h2><NavLink className="button button-primary" to="/my-pc">Open PCForge Scanner</NavLink></div>
   </section>
  </main>;
 }
@@ -120,14 +136,14 @@ function App(){
   <header className="site-header">
    <NavLink className="brand" to="/"><span className="brand-mark">P</span><span>PCForge</span></NavLink>
    <nav className="nav-links" aria-label="Primary navigation">{navItems.map(item=><NavLink key={item.to} to={item.to} className={({isActive})=>"nav-link"+(isActive?" active":"")}>{item.label}</NavLink>)}</nav>
-   <button className="header-cta">Download Scanner</button>
+   <NavLink className="header-cta" to="/my-pc">Open Scanner</NavLink>
   </header>
   <Routes>
    <Route path="/" element={<Home/>}/>
    <Route path="/games" element={<Games/>}/>
    <Route path="/games/:gameId" element={<GameDetails gameId={window.location.pathname.split("/").pop()}/>}/>
    <Route path="/my-pc" element={<MyPC/>}/>
-   <Route path="/about" element={<PlaceholderPage title="Built to make PC requirements simple." description="PCForge turns hardware requirements into an answer you can understand."/>}/>
+   <Route path="/about" element={<About/>}/>
   </Routes>
   <footer className="site-footer page-shell"><span>PCForge</span><span>Can Your PC Run It?</span></footer>
  </div>;
