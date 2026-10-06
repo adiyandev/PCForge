@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { NavLink, Route, Routes, useNavigate } from "react-router-dom";
+import { NavLink, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { games } from "./data/games";
 
 function PlaceholderPage({title,description}){return <main className="page-shell"><section className="placeholder"><span className="eyebrow">PCForge</span><h1>{title}</h1><p>{description}</p></section></main>;}
@@ -66,7 +66,8 @@ function MyPC(){
  </main>;
 }
 
-function GameDetails({gameId}){
+function GameDetails(){
+ const { gameId } = useParams();
  const game=games.find(item=>item.id===gameId);
  if(!game) return <PlaceholderPage title="Game not found." description="That game is not in the PCForge library yet."/>;
  const requirements=game.requirementsData;
@@ -141,7 +142,7 @@ function App(){
   <Routes>
    <Route path="/" element={<Home/>}/>
    <Route path="/games" element={<Games/>}/>
-   <Route path="/games/:gameId" element={<GameDetails gameId={window.location.pathname.split("/").pop()}/>}/>
+   <Route path="/games/:gameId" element={<GameDetails/>}/>
    <Route path="/my-pc" element={<MyPC/>}/>
    <Route path="/about" element={<About/>}/>
   </Routes>
