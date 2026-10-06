@@ -7,10 +7,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:desktop": "cross-env VITE_PCForge_DESKTOP=true vite build",
     "preview": "vite preview",
     "electron": "electron .",
-    "electron:dev": "concurrently -k \"vite --host 127.0.0.1\" \"wait-on http://127.0.0.1:5173 && cross-env ELECTRON_DEV_SERVER_URL=http://127.0.0.1:5173 electron .\"",
-    "electron:build": "npm run build && electron-builder --win"
+    "electron:dev": "concurrently -k \"vite --host 127.0.0.1\" \"wait-on http://127.0.0.1:5173 && cross-env VITE_PCForge_DESKTOP=true ELECTRON_DEV_SERVER_URL=http://127.0.0.1:5173 electron .\"",
+    "electron:build": "npm run build:desktop && electron-builder --win"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -24,6 +25,8 @@
     "electron-builder": "^26.0.12",
     "concurrently": "^9.2.1",
     "cross-env": "^10.0.0",
+    "electron": "^38.2.0",
+    "electron-builder": "^26.0.12",
     "wait-on": "^8.0.4"
   },
   "build": {
